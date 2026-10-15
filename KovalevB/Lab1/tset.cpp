@@ -1,4 +1,5 @@
 #include "tset.h"
+#include <stdexcept>
 
 TSet::TSet(int mp): MaxPower(mp), BitField(mp) {}
 
@@ -36,6 +37,9 @@ int TSet::operator!=(const TSet &s) const {
 }
 
 TSet& TSet::operator=(const TSet &s) {
+    if (this == &s) {
+        return *this;
+    }
     MaxPower = s.MaxPower;
     BitField = s.BitField;
     return *this;
@@ -47,7 +51,6 @@ TSet TSet::operator+(const int Elem) {
     return temp;
 }
 
-
 TSet TSet::operator-(const int Elem) {
     TSet temp(*this);
     temp.DelElem(Elem);
@@ -55,10 +58,16 @@ TSet TSet::operator-(const int Elem) {
 }
 
 TSet TSet::operator+(const TSet &s) {
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("Sets must belong to the same universe");
+    }
     return TSet(BitField | s.BitField);
 }
 
 TSet TSet::operator*(const TSet &s) {
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("Sets must belong to the same universe");
+    }
     return TSet(BitField & s.BitField);
 }
 
@@ -67,15 +76,29 @@ TSet TSet::operator~(void) {
 }
 
 std::istream &operator>>(std::istream &istr, TSet &s) {
-    int temp;
+    TSet tempSet(s.GetMaxPower());
     char ch;
-    // Ожидаем формат ввода типа { 1 2 5 }
-    do { istr >> ch; } while (ch != '{');
-    do {
-        istr >> temp;
-        s.InsElem(temp);
-        istr >> ch;
-    } while (ch != '}');
+
+    while (istr >> ch && ch != '{') {}
+    if (istr.fail()) { return istr; }
+
+    while (istr >> ch) {
+        if (ch == '}') {
+            break;
+        }
+        if (ch == ',') {
+            continue;
+        }
+        istr.putback(ch);
+
+        int elem;
+        if (istr >> elem) {
+            tempSet.InsElem(elem);
+        } else {
+            break;
+        }
+    }
+    s = tempSet;
     return istr;
 }
 
