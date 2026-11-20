@@ -289,15 +289,45 @@ TEST(TSet, frombitfield) {
     EXPECT_TRUE(s.IsMember(7));
     EXPECT_FALSE(s.IsMember(3));
 }
-TEST(TBitField, differentsizes) {
+
+TEST(TSet, differentuniveses) {
     TBitField a(10);
     TBitField b(20);
-    EXPECT_THROW(a & b, std::invalid_argument);
-    EXPECT_THROW(a | b, std::invalid_argument);
+    a.SetBit(5);
+    b.SetBit(15);
+    TBitField c = a | b;
+    EXPECT_EQ(c.GetLength(), 20);
+    EXPECT_EQ(c.GetBit(5), 1);
+    EXPECT_EQ(c.GetBit(15), 1);
+    TBitField d = a & b;
+    EXPECT_EQ(d.GetLength(), 20);
+    EXPECT_EQ(d.GetBit(5), 0);
 }
-TEST(TSet, differentuniveses) {
-    TSet a(10);
-    TSet b(20);
-    EXPECT_THROW(a + b, std::invalid_argument);
-    EXPECT_THROW(a * b, std::invalid_argument);
+
+TEST(TBitField, emptyuniverse) {
+    TBitField empty1(0);
+    TBitField empty2(0);
+    EXPECT_EQ(empty1.GetLength(), 0);
+    TBitField res1 = empty1 | empty2;
+    EXPECT_EQ(res1.GetLength(), 0);
+    TBitField res2 = empty1 & empty2;
+    EXPECT_EQ(res2.GetLength(), 0);
+    TBitField res3 = ~empty1;
+    EXPECT_EQ(res3.GetLength(), 0);
+    TBitField nonempty(10);
+    nonempty.SetBit(3);
+    TBitField res4 = empty1 | nonempty;
+    EXPECT_EQ(res4.GetLength(), 10);
+    EXPECT_EQ(res4.GetBit(3), 1);
+}
+
+TEST(TSet, emptyuniverse) {
+    TSet empty(0);
+    EXPECT_EQ(empty.GetMaxPower(), 0);
+    TSet c = ~empty;
+    EXPECT_EQ(c.GetMaxPower(), 0);
+    TSet sum = empty + empty;
+    EXPECT_EQ(sum.GetMaxPower(), 0);
+    TSet mult = empty * empty;
+    EXPECT_EQ(mult.GetMaxPower(), 0);
 }

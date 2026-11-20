@@ -115,23 +115,37 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 }
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    if (BitLen != bf.BitLen) {
-        throw std::invalid_argument("Sizes must be the same");
+    int maxlen = 0;
+    if (BitLen > bf.BitLen) {
+        maxlen = BitLen;
     }
-    TBitField result(BitLen);
+    else {
+        maxlen = bf.BitLen;
+    }
+    TBitField result(maxlen);
     for (int i = 0; i < MemLen; i++) {
-        result.pMem[i] = pMem[i] | bf.pMem[i];
+        result.pMem[i] = pMem[i];
+    }
+    for (int i = 0; i < bf.MemLen; i++) {
+        result.pMem[i] = result.pMem[i] | bf.pMem[i];
     }
     return result;
 }
 
 TBitField TBitField::operator&(const TBitField& bf) {
-    if (BitLen != bf.BitLen) {
-        throw std::invalid_argument("Sizes must be the same");
+    int maxlen = 0;
+    if (BitLen > bf.BitLen) {
+        maxlen = BitLen;
     }
-    TBitField result(BitLen);
+    else {
+        maxlen = bf.BitLen;
+    }
+    TBitField result(maxlen);
     for (int i = 0; i < MemLen; i++) {
-        result.pMem[i] = pMem[i] & bf.pMem[i];
+        result.pMem[i] = pMem[i];
+    }
+    for (int i = 0; i < bf.MemLen; i++) {
+        result.pMem[i] = result.pMem[i] & bf.pMem[i];
     }
     return result;
 }
