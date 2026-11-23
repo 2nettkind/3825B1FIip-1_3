@@ -109,7 +109,7 @@ TVector<ValType> TVector<ValType>::operator+(const ValType &val) const
     TVector<ValType> res(*this);
     int actualLen = Size - StartIndex;
     for (int i = 0; i < actualLen; ++i) {
-        res.pVector[i] = res.pVector[i] - val;
+        res.pVector[i] = res.pVector[i] + val;
     }
     return res;
 }
@@ -172,7 +172,7 @@ ValType TVector<ValType>::operator*(const TVector<ValType> &v) const
     }
     ValType res = ValType();
     int actualLen = Size - StartIndex;
-    for (int i = 1; i < actualLen; ++i) {
+    for (int i = 0; i < actualLen; ++i) {
         res = res + (pVector[i] * v.pVector[i]);
     }
     return res;
